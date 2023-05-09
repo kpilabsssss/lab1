@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 class Lab1:
     def __init__(self, sample_size=117):
         """
-        self.mu - среднее значение нормального распределения
-        self.sigma - стандартое  отклонение нормального распределения
-        self.sample - выборка
+        self.mu - середнє значення нормального розподілу
+        self.sigma - стандартне відхилення нормального розподілу
+        self.sample - вибірка
         """
         self.mu, self.sigma = np.random.normal(loc=0, scale=1, size=2) * 1.2
         while self.sigma <= 0:
@@ -16,7 +16,7 @@ class Lab1:
     def plot(self, bins=10, density=True, alpha=0.6, color='b', edgecolor='black',
              title='нормальний розподіл', xlabel='значення', ylabel='ймовірність'):
         """
-        строит гистограмму и полигон для выборки
+        будує гістограму та полігон для вибірки
         """
         plt.hist(self.sample, bins=bins, density=density, alpha=alpha, color=color, edgecolor=edgecolor)
         plt.plot(sorted(self.sample), np.linspace(0, 1, len(self.sample), endpoint=False), 'r--')
@@ -27,7 +27,7 @@ class Lab1:
 
     def plot_box(self, color='b', title='діаграма розмаху', ylabel='значення'):
         """
-        строит диаграмму розмаху для выборки
+        будує діграму розмаху для вибірки
         """
         plt.boxplot(self.sample, vert=False, widths=0.5, patch_artist=True,
                     boxprops=dict(facecolor=color, color='black'),
@@ -41,7 +41,7 @@ class Lab1:
 
     def plot_pareto(self, xlabel='Значення', ylabel='Кумулятивна частота'):
         """
-        строит диаграмму Парето для выборки
+        будує діаграму Парето для вибірки
         """
         sorted_sample = np.sort(self.sample)[::-1]
         cum_freq = np.cumsum(sorted_sample) / np.sum(sorted_sample)
@@ -59,7 +59,7 @@ class Lab1:
 
     def plot_pie(self, bins=10):
         """
-        строит круговую диаграмму для выборки
+        будує кругову діаграму для вибірки
         """
         counts, bins = np.histogram(self.sample, bins=bins)
         labels = [f'{bins[i]:.2f} - {bins[i+1]:.2f}' for i in range(len(bins)-1)]
@@ -69,13 +69,13 @@ class Lab1:
 
     def sample_mean(self):
         """
-        выборочное среднее
+        вибіркове середнє
         """
         return np.sum(self.sample) / len(self.sample)
 
     def sample_median(self):
         """
-        медиана
+        медіана
         """
         sorted_sample = sorted(self.sample)
         n = len(self.sample)
@@ -92,14 +92,14 @@ class Lab1:
 
     def sample_variance(self):
         """
-        дисперсия
+        дисперсія
         """
         sample_mean_value = self.sample_mean()
         return np.sum((self.sample - sample_mean_value) ** 2) / (len(self.sample) - 1)
 
     def sample_standard_deviation(self):
         """
-        стандартное отклонение
+        стандартне відхилення
         """
         return np.sqrt(self.sample_variance())
 
@@ -109,8 +109,8 @@ if __name__ == '__main__':
     test.plot_box()
     test.plot_pareto()
     test.plot_pie()
-    print(f'выборочное среднее: {test.sample_mean()}')
-    print(f'медиана: {test.sample_median()}')
+    print(f'вибіркове середнє: {test.sample_mean()}')
+    print(f'медіана: {test.sample_median()}')
     print(f'мода: {test.sample_mode()}')
-    print(f'дисперсия: {test.sample_variance()}')
-    print(f'среднеквадратичное отклонение: {test.sample_standard_deviation()}')
+    print(f'дисперсія: {test.sample_variance()}')
+    print(f'середньоквадратичне відхилення: {test.sample_standard_deviation()}')
