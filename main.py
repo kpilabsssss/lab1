@@ -8,29 +8,63 @@ class Lab1:
         self.sigma - стандартое  отклонение нормального распределения
         self.sample - выборка
         """
-        self.mu, self.sigma = np.random.normal(loc=0, scale=1, size=2)
+        self.mu, self.sigma = np.random.normal(loc=0, scale=1, size=2) * 1.2
         while self.sigma <= 0:
-            self.mu, self.sigma = np.random.normal(loc=0, scale=1, size=2)
+            self.mu, self.sigma = np.random.normal(loc=0, scale=1, size=2) * 1.2
         self.sample = np.random.normal(loc=self.mu, scale=self.sigma, size=sample_size)
 
-    def plot_histogram(self, bins=10, density=True, alpha=0.6, color='b', edgecolor='black'):
+    def plot(self, bins=10, density=True, alpha=0.6, color='b', edgecolor='black',
+             title='нормальний розподіл', xlabel='значення', ylabel='ймовірність'):
         """
-        строит гистограму для выборки
+        строит гистограмму и полигон для выборки
         """
         plt.hist(self.sample, bins=bins, density=density, alpha=alpha, color=color, edgecolor=edgecolor)
-
-    def plot_polygon(self):
-        """
-        строит полигон для выборки
-        """
         plt.plot(sorted(self.sample), np.linspace(0, 1, len(self.sample), endpoint=False), 'r--')
-
-    def set_labels(self, title='Нормальний розподіл', xlabel='Значення', ylabel='Ймовірність'):
         plt.title(title)
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
+        plt.show()
 
-    def show(self):
+    def plot_box(self, color='b', title='діаграма розмаху', ylabel='значення'):
+        """
+        строит диаграмму розмаху для выборки
+        """
+        plt.boxplot(self.sample, vert=False, widths=0.5, patch_artist=True,
+                    boxprops=dict(facecolor=color, color='black'),
+                    whiskerprops=dict(color='black'),
+                    capprops=dict(color='black'),
+                    medianprops=dict(color='red'),
+                    flierprops=dict(marker='o', markersize=5, markerfacecolor='black'))
+        plt.title(title)
+        plt.ylabel(ylabel)
+        plt.show()
+
+    def plot_pareto(self, xlabel='Значення', ylabel='Кумулятивна частота'):
+        """
+        строит диаграмму Парето для выборки
+        """
+        sorted_sample = np.sort(self.sample)[::-1]
+        cum_freq = np.cumsum(sorted_sample) / np.sum(sorted_sample)
+        fig, ax1 = plt.subplots()
+        ax1.bar(np.arange(len(sorted_sample)), sorted_sample, color='b')
+        ax1.set_xlabel('значення')
+        ax1.set_ylabel('частота', color='b')
+        ax1.tick_params(axis='y', labelcolor='b')
+        ax2 = ax1.twinx()
+        ax2.plot(cum_freq, 'r--')
+        ax2.set_ylabel('кумулятивна частота', color='r')
+        ax2.tick_params(axis='y', labelcolor='r')
+        plt.title('діаграма парето')
+        plt.show()
+
+    def plot_pie(self, bins=10):
+        """
+        строит круговую диаграмму для выборки
+        """
+        counts, bins = np.histogram(self.sample, bins=bins)
+        labels = [f'{bins[i]:.2f} - {bins[i+1]:.2f}' for i in range(len(bins)-1)]
+        plt.pie(counts, labels=labels, autopct='%1.1f%%')
+        plt.title('кругова діаграма')
         plt.show()
 
     def sample_mean(self):
@@ -69,13 +103,12 @@ class Lab1:
         """
         return np.sqrt(self.sample_variance())
 
-
 if __name__ == '__main__':
     test = Lab1()
-    test.plot_histogram()
-    test.plot_polygon()
-    test.set_labels()
-    test.show()
+    test.plot()
+    test.plot_box()
+    test.plot_pareto()
+    test.plot_pie()
     print(f'выборочное среднее: {test.sample_mean()}')
     print(f'медиана: {test.sample_median()}')
     print(f'мода: {test.sample_mode()}')
