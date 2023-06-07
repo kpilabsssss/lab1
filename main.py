@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.stats import t, chi2
 
 class Lab1:
     def __init__(self, sample_size=117):
@@ -103,6 +104,23 @@ class Lab1:
         """
         return np.sqrt(self.sample_variance())
 
+    def confidence_interval_mean(self, confidence_level=0.95):
+        n = len(self.sample)
+        dof = n - 1
+        t_value = t.ppf((1 + confidence_level) / 2, dof)
+        std_error = self.sample_standard_deviation() / np.sqrt(n)
+        lower_bound = self.sample_mean() - t_value * std_error
+        upper_bound = self.sample_mean() + t_value * std_error
+        return (lower_bound, upper_bound)
+
+    def confidence_interval_std(self, confidence_level=0.95):
+        n = len(self.sample)
+        chi2_value_1 = chi2.ppf((1 + confidence_level) / 2, n - 1)
+        chi2_value_2 = chi2.ppf((1 - confidence_level) / 2, n - 1)
+        lower_bound = np.sqrt((n - 1) * self.sample_variance() / chi2_value_1)
+        upper_bound = np.sqrt((n - 1) * self.sample_variance() / chi2_value_2)
+        return (lower_bound, upper_bound)
+
 if __name__ == '__main__':
     test = Lab1()
     test.plot()
@@ -114,3 +132,50 @@ if __name__ == '__main__':
     print(f'мода: {test.sample_mode()}')
     print(f'дисперсія: {test.sample_variance()}')
     print(f'середньоквадратичне відхилення: {test.sample_standard_deviation()}')
+    print(f'довірчий інтервал для середнього (95%): {test.confidence_interval_mean()}')
+    print(f'довірчий інтервал для стандартного відхилення (95%): {test.confidence_interval_std()}')
+
+    sample_sizes = [50, 100, 150, 200]
+    confidence_levels = [0.90, 0.95, 0.99]
+    means = []
+    variances = []
+    mean_intervals = []
+    variance_intervals = []
+
+    for sample_size in sample_sizes:
+        lab = Lab1(sample_size=sample_size)
+        means.append(lab.sample_mean())
+        variances.append(lab.sample_variance())
+        mean_intervals_row = []
+        variance_intervals_row = []
+        for confidence_level in confidence_levels:
+            mean_interval = lab.confidence_interval_mean(confidence_level=confidence_level)
+            variance_interval = lab.confidence_interval_std(confidence_level=confidence_level)
+            mean_intervals_row.append(mean_interval)
+            variance_intervals_row.append(variance_interval)
+        mean_intervals.append(mean_intervals_row)
+        variance_intervals.append(variance_intervals_row)
+
+    plt.plot(sample_sizes, means, marker='o')
+    plt.xlabel('обсяг вибірки')
+    plt.ylabel('вибіркове середнє')
+    plt.title('залежність вибіркового середнього від обсягу вибірки')
+    plt.show()
+
+    plt.plot(sample_sizes, variances, marker='o')
+    plt.xlabel('обсяг вибірки')
+    plt.ylabel('дисперсія')
+    plt.title('залежність дисперсії від обсягу вибірки')
+    plt.show()
+
+    table_mean_intervals = np.array(mean_intervals)
+    plt.table(cellText=table_mean_intervals, rowLabels=sample_sizes, colLabels=confidence_levels, loc='center')
+    plt.title('довірчі інтервали для середнього')
+    plt.axis('off')
+    plt.show()
+
+    table_variance_intervals = np.array(variance_intervals)
+    plt.table(cellText=table_variance_intervals, rowLabels=sample_sizes, colLabels=confidence_levels, loc='center')
+    plt.title('довірчі інтервали для дисперсії')
+    plt.axis('off')
+    plt.show()
